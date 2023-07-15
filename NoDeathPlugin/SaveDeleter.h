@@ -14,44 +14,36 @@ namespace GOTHIC_ENGINE
 	public:
 
 		SaveDeleter() = delete;
+		SaveDeleter(SaveDeleter&) = delete;
+		SaveDeleter& operator=(SaveDeleter&) = delete;
 
 		static bool IsSavePath(const std::filesystem::path& t_path, const std::vector<int>& t_saveSlots)
 		{
+			auto upper = [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); };
+	
+			const auto pathName = t_path.filename().string();
+			const auto upperPathName = pathName | (std::views::transform(upper) | std::ranges::to<std::string>());
 
-			const auto stringPath = [&]() -> std::string
-			{
-				auto fileName = t_path.filename().string();
-
-				std::ranges::transform(fileName, std::begin(fileName), [](unsigned char ch) { return static_cast<char>(toupper(ch)); });
-
-				return fileName;
-			}();
-
-
-			if (stringPath == "CURRENT")
+			
+			if (upperPathName == "CURRENT")
 			{
 				return true;
 			}
 
-			if (stringPath == "QUICKSAVE")
+			if (upperPathName == "QUICKSAVE")
 			{
 				return true;
-			}
-
-			if (t_saveSlots.size() == 0)
-			{
-				return false;
 			}
 
 			static constexpr std::string_view saveNameBegin{ "SAVEGAME" };
 
 
-			if (stringPath.find(saveNameBegin) == 0)
+			if (upperPathName.starts_with(saveNameBegin))
 			{
 				int nr;
 
-				const auto begin = stringPath.c_str() + saveNameBegin.size();
-				const auto end = stringPath.c_str() + stringPath.size();
+				const auto begin = upperPathName.c_str() + saveNameBegin.size();
+				const auto end = upperPathName.c_str() + upperPathName.size();
 
 				auto error = std::from_chars(begin, end, nr);
 
@@ -117,7 +109,7 @@ namespace GOTHIC_ENGINE
 			std::vector<std::filesystem::path> vec;
 
 
-			const auto savesString = []() -> std::filesystem::path
+			static const auto savesString = []() -> std::filesystem::path
 			{
 
 				if (zoptions)
@@ -154,19 +146,17 @@ namespace GOTHIC_ENGINE
 			static std::vector<int> GetSavedSlots()
 			{
 
-				if (!gameMan) return{};
-
 				const auto saveManager = gameMan->savegameManager;
 
 				if (!saveManager)
 					return{};
 
 
-				std::vector<int> vec;
+				std::vector<int> vec; vec.reserve(20);
 
 				const auto& infoList = saveManager->infoList;
 
-				for (int i = 0; i < infoList.GetNum(); i++)
+				for (const auto i : std::views::iota(0, infoList.GetNum()))
 				{
 					vec.push_back(infoList[i]->m_SlotNr);
 				}
@@ -176,7 +166,7 @@ namespace GOTHIC_ENGINE
 
 			static void ReinitSaveManager(const std::vector<int>& slots)
 			{
-				if (ogame && ogame->savegameManager)
+				if (ogame->savegameManager)
 				{
 					auto const saveMan = ogame->savegameManager;
 

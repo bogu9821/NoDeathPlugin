@@ -23,6 +23,9 @@ namespace GOTHIC_ENGINE
 	{
 	public:
 
+		NoDeath(NoDeath&) = delete;
+		NoDeath& operator=(NoDeath&) = delete;
+
 		NoDeath()
 		{
 
@@ -36,22 +39,22 @@ namespace GOTHIC_ENGINE
 
 			const std::string_view view{ readedStep.ToChar() };
 
-
+			using enum eAfterDeath;
 			if (view == "NEWGAME")
 			{
-				m_stepType = eAfterDeath::NEWGAME;
+				m_stepType = NEWGAME;
 			}
 			else if (view == "QUIT")
 			{
-				m_stepType = eAfterDeath::QUIT;
+				m_stepType = QUIT;
 			}
 			else if (view == "DELETEONLY")
 			{
-				m_stepType = eAfterDeath::DELETEONLY;
+				m_stepType = DELETEONLY;
 			}
 			else
 			{
-				m_stepType = eAfterDeath::NOTHING;
+				m_stepType = NOTHING;
 
 				if (view != "NOTHING")
 				{
@@ -84,7 +87,9 @@ namespace GOTHIC_ENGINE
 		void OnLoop()
 		{
 			if (m_stepType == eAfterDeath::NOTHING)
+			{
 				return;
+			}
 			
 			if (m_done)
 			{
@@ -115,8 +120,6 @@ namespace GOTHIC_ENGINE
 
 				const auto optionalInputBlocker = m_blockInput ? std::make_unique<SingleInputHelper>() : nullptr;
 
-
-				
 
 				if (msElapsed >= m_waitTime || zKeyToggled(KEY_RETURN))
 				{
@@ -173,9 +176,13 @@ namespace GOTHIC_ENGINE
 					ogame->LoadGame(-2, worldName);
 
 					if (zmusic)
+					{
 						zmusic->Stop();
+					}
 					if (zsound)
+					{
 						zsound->StopAllSounds();
+					}
 
 					gameMan->playTime = {};
 

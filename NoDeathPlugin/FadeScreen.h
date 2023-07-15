@@ -13,7 +13,10 @@ namespace GOTHIC_ENGINE
 	{
 	public:
 
-		FadeInScreen(const std::string_view t_texture) : m_view(new zCView)
+		FadeInScreen(FadeInScreen&) = delete;
+		FadeInScreen& operator=(FadeInScreen&) = delete;
+
+		FadeInScreen(const std::string_view t_texture) : m_view(std::make_unique<zCView>())
 		{
 			m_view->SetSize(8192, 8192);
 			m_view->SetPos(0, 0);
@@ -21,13 +24,7 @@ namespace GOTHIC_ENGINE
 			SetAlpha(0);
 			m_view->SetAlphaBlendFunc(zRND_ALPHA_FUNC_BLEND);
 			m_view->SetFont("FONT_OLD_10_WHITE_HI.TGA");
-		}
-		~FadeInScreen()
-		{
-			delete m_view;
-		}
-
-		
+		}	
 
 		void Fade(const std::chrono::milliseconds t_timeElapsed, const std::chrono::milliseconds t_timeEnd, const std::string& message)
 		{
@@ -37,7 +34,7 @@ namespace GOTHIC_ENGINE
 			SetAlpha(static_cast<int>(std::clamp(ticksElapsed, 0ll, 255ll)));
 
 
-			screen->InsertItem(m_view);
+			screen->InsertItem(m_view.get());
 
 			const auto floatDuration = std::chrono::duration_cast<std::chrono::duration<float>>(t_timeEnd - t_timeElapsed);
 
@@ -47,7 +44,7 @@ namespace GOTHIC_ENGINE
 			Print(toEnd, message);
 			m_view->Render();
 
-			screen->RemoveItem(m_view);
+			screen->RemoveItem(m_view.get());
 
 
 		}
@@ -98,7 +95,7 @@ namespace GOTHIC_ENGINE
 		}
 
 
-		zCView* m_view{};
+		std::unique_ptr<zCView> m_view{};
 
 	};
 }
