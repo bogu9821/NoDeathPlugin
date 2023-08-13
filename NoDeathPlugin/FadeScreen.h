@@ -7,8 +7,62 @@
 #include <ranges>
 #include <format>
 
+
+
 namespace GOTHIC_ENGINE
 {
+	class zSTRING_back_insert_iterator
+	{
+	public:
+		using iterator_category = std::output_iterator_tag;
+		using value_type = void;
+		using pointer = void;
+		using reference = void;
+
+		using container_type = zSTRING;
+
+#ifdef __cpp_lib_concepts
+		using difference_type = ptrdiff_t;
+#else
+		using difference_type = void;
+#endif // __cpp_lib_concepts
+
+		_CONSTEXPR20 explicit zSTRING_back_insert_iterator(zSTRING& _Cont) noexcept /* strengthened */
+			: container(_STD addressof(_Cont)) {}
+
+		zSTRING_back_insert_iterator& operator=(char _Val) {
+			container->Align(zSTR_LEFT, container->Length()+1, _Val);
+			return *this;
+		}
+
+
+		_NODISCARD _CONSTEXPR20 zSTRING_back_insert_iterator& operator*() noexcept /* strengthened */ {
+			return *this;
+		}
+
+		_CONSTEXPR20 zSTRING_back_insert_iterator& operator++() noexcept /* strengthened */ {
+			return *this;
+		}
+
+		_CONSTEXPR20 zSTRING_back_insert_iterator operator++(int) noexcept /* strengthened */ {
+			return *this;
+		}
+
+	protected:
+		zSTRING* container;
+	};
+
+
+	template<typename ...Args>
+	inline zSTRING FormatString(const std::string_view t_text, Args&&... t_args)
+	{
+		const auto args = std::make_format_args(std::forward<Args>(t_args)...);
+		zSTRING formattedText;
+		//TODO reserve space for str
+		std::vformat_to(zSTRING_back_insert_iterator{ formattedText }, t_text, args);
+		return formattedText;
+	}
+
 	class FadeInScreen
 	{
 	public:
@@ -26,7 +80,7 @@ namespace GOTHIC_ENGINE
 			m_view->SetFont("FONT_OLD_10_WHITE_HI.TGA");
 		}	
 
-		void Fade(const std::chrono::milliseconds t_timeElapsed, const std::chrono::milliseconds t_timeEnd, const std::string& message)
+		void Fade(const std::chrono::milliseconds t_timeElapsed, const std::chrono::milliseconds t_timeEnd, const std::string_view t_message)
 		{
 			const auto fadeTick = t_timeEnd.count() / 255;
 			const auto ticksElapsed = fadeTick != 0 ? t_timeElapsed.count() / fadeTick : 0;
@@ -41,7 +95,7 @@ namespace GOTHIC_ENGINE
 			const auto toEnd = floatDuration.count() > 0.f ? floatDuration.count() : 0.f;
 
 
-			Print(toEnd, message);
+			Print(toEnd, t_message);
 			m_view->Render();
 
 			screen->RemoveItem(m_view.get());
@@ -50,23 +104,9 @@ namespace GOTHIC_ENGINE
 		}
 
 	private:
-		void Print(const float t_seconds, const std::string& t_text)
+		void Print(const float t_seconds, const std::string_view t_text)
 		{
-			static constexpr std::string_view separator{ "{}" };
-
-			const auto secondsIndex = t_text.find(separator);
-
-			if (secondsIndex == std::string::npos)
-				return;
-
-			const auto nextWord = secondsIndex + separator.size();
-
-			const std::string text_begin{ t_text.c_str(), secondsIndex };
-			const zSTRING text_replaced{ t_seconds, 2 };
-			const std::string_view text_end{ t_text.c_str() + nextWord };
-
-			zSTRING formattedText = text_begin.c_str() + text_replaced + text_end.data();
-
+			const auto formattedText = FormatString(t_text,t_seconds);
 			m_view->ClrPrintwin();
 
 			for (uint32_t i = 1; ; i++)

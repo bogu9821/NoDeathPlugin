@@ -45,46 +45,16 @@ constexpr std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLa
 	using namespace UnionCore;
 	switch (t_id)
 	{
-	case Lang_Eng: return "Wait {}s\n or press enter to continue...";
-	case Lang_Pol: return "Poczekaj {}s\n lub naciœnij enter, by kontynuowaæ...";
+	case Lang_Eng: return "Wait {:.2f}s\n or press enter to continue...";
+	case Lang_Pol: return "Poczekaj {:.2f}s\n lub naciœnij enter, by kontynuowaæ...";
 	default:
-		return "";
+		return "Wait {:.2f}s\n or press enter to continue...";
 	}
 }
-
-
-struct LocalizedMessage
-{
-	LocalizedMessage(std::string t_message, UnionCore::TSystemLangID t_id) : m_message(std::move(t_message)), m_id(t_id) {}
-
-	static void Init()
-	{
-		s_endMessages.clear();
-
-		for (int i = 0; i < UnionCore::TSystemLangID::Lang_Max; i++)
-		{
-			const auto id = static_cast<UnionCore::TSystemLangID>(i);
-
-			const std::string msg{ GetDefaultLocalizedMessage(id) };
-
-			if (msg.empty() == false)
-			{
-				s_endMessages.emplace_back(msg, id);
-			}
-		}
-	}
-
-	inline static std::vector<LocalizedMessage> s_endMessages{};
-
-	std::string m_message{};
-	UnionCore::TSystemLangID m_id{};
-};
 
 enum class eAfterDeath
 {
 	NOTHING, QUIT, NEWGAME, DELETEONLY
 };
-
-
 
 #endif

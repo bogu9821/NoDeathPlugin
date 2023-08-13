@@ -130,18 +130,7 @@ namespace GOTHIC_ENGINE
 
 				if (m_fadeScreen)
 				{
-					const auto language = UnionCore::Union.GetSystemLanguage();
-
-					const auto it = std::ranges::find_if(LocalizedMessage::s_endMessages,
-						[language](const auto& message) -> bool
-						{
-							return message.m_id == language;
-						});
-
-
-
-
-					const auto& text = it == std::end(LocalizedMessage::s_endMessages) ? "" : it->m_message;
+					static const auto text = GetDefaultLocalizedMessage(UnionCore::Union.GetSystemLanguage());
 
 					m_fadeScreen->Fade(msElapsed, m_waitTime, text);
 

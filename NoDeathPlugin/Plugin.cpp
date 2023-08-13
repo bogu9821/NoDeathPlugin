@@ -10,7 +10,6 @@ namespace GOTHIC_ENGINE {
   }
   
   void Game_Init() {
-      LocalizedMessage::Init();
   }
 
   void Game_Exit() {
