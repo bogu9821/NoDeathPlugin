@@ -4,6 +4,8 @@
 #define NODEATH_UTILITY
 
 #include <vector>
+#include <numeric>
+#include <array>
 
 
 template<typename... Args>
@@ -40,15 +42,43 @@ constexpr std::string_view SystemLangIDToString(const UnionCore::TSystemLangID t
 	}
 }
 
-constexpr std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
+
+template<typename... Args> requires (std::is_convertible_v<Args, const char*> && ...)
+constexpr std::string SetWaitMessage(Args&&... t_lines)
+{
+	if constexpr (sizeof...(t_lines) == 0)
+	{
+		return {};
+	}
+
+	std::array arr_lines{std::string{t_lines}...};
+
+	arr_lines[0] += "{:.2f}s";
+
+	return std::accumulate(std::next(std::begin(arr_lines)), std::end(arr_lines), std::move(arr_lines[0]),
+		[](auto&& left, auto&& right) 
+		{
+			return left + '\n' + right;
+		});
+}
+
+constexpr std::string GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
 {
 	using namespace UnionCore;
 	switch (t_id)
 	{
+	case Lang_Eng: 
+		return SetWaitMessage("Wait ","or press enter to continue...");
+	case Lang_Pol:
+		return SetWaitMessage("Poczekaj ", "lub naciœnij enter, by kontynuowaæ...");
+	default:
+		return SetWaitMessage("Wait ", "or press enter to continue...");
+	/*
 	case Lang_Eng: return "Wait {:.2f}s\n or press enter to continue...";
 	case Lang_Pol: return "Poczekaj {:.2f}s\n lub naciœnij enter, by kontynuowaæ...";
 	default:
 		return "Wait {:.2f}s\n or press enter to continue...";
+	*/
 	}
 }
 

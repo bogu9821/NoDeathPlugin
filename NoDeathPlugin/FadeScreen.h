@@ -56,10 +56,17 @@ namespace GOTHIC_ENGINE
 	template<typename ...Args>
 	inline zSTRING FormatString(const std::string_view t_text, Args&&... t_args)
 	{
-		const auto args = std::make_format_args(std::forward<Args>(t_args)...);
-		zSTRING formattedText;
-		//TODO reserve space for str
+		std::basic_format_args<std::format_context> args = std::make_format_args(std::forward<Args>(t_args)...);
+		
+		const auto size = args._Estimate_required_capacity() + 1;
+		auto buffer = std::make_unique<char[]>(size);
+		buffer[size - 1] = '\0';
+
+		//no reserve method
+		zSTRING formattedText{ buffer.get() };
+		
 		std::vformat_to(zSTRING_back_insert_iterator{ formattedText }, t_text, args);
+
 		return formattedText;
 	}
 
