@@ -130,7 +130,7 @@ namespace GOTHIC_ENGINE
 
 				if (m_fadeScreen)
 				{
-					static const auto text = GetDefaultLocalizedMessage(UnionCore::Union.GetSystemLanguage());
+					const auto text = GetDefaultLocalizedMessage(UnionCore::Union.GetSystemLanguage());
 
 					m_fadeScreen->Fade(msElapsed, m_waitTime, std::string_view{text});
 

@@ -128,7 +128,7 @@ constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 }
 
 
-std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
+inline std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
 {
 	using namespace UnionCore;
 
