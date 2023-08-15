@@ -94,7 +94,7 @@ namespace GOTHIC_ENGINE
 					ReinitSaveManager(slots);
 				}
 			}
-			catch (std::exception& ex)
+			catch (std::filesystem::filesystem_error& ex)
 			{
 				LogWarning(ex.what());
 			}
@@ -133,7 +133,7 @@ namespace GOTHIC_ENGINE
 					}
 				}
 			}
-			catch (std::exception& ex)
+			catch (std::filesystem::filesystem_error& ex)
 			{
 				PrintLineCmd(ex.what());
 			}
