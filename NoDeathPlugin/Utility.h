@@ -43,43 +43,113 @@ constexpr std::string_view SystemLangIDToString(const UnionCore::TSystemLangID t
 }
 
 
-template<typename... Args> requires (std::is_convertible_v<Args, const char*> && ...)
-constexpr std::string SetWaitMessage(Args&&... t_lines)
+template<std::size_t Size>
+class FixedStr
 {
-	if constexpr (sizeof...(t_lines) == 0)
+	std::array<char, Size +1> m_array{};
+	
+public:
+
+	constexpr FixedStr(const char(&source)[Size+1])
 	{
-		return {};
+		std::copy(std::begin(source), std::end(source), begin());
 	}
 
-	std::array arr_lines{std::string{t_lines}...};
+	template<std::size_t LeftSize, std::size_t RightSize>
+	constexpr FixedStr(const FixedStr<LeftSize>& t_left,const FixedStr<RightSize>& t_right)
+	{
+		static_assert(LeftSize + RightSize == Size);
 
-	arr_lines[0] += "{:.2f}s";
+		std::copy(t_left.cbegin(), t_left.cend(), begin());
+		std::copy(t_right.cbegin(), t_right.cend(), begin() + t_left.size());
+	}
 
-	return std::accumulate(std::next(std::begin(arr_lines)), std::end(arr_lines), std::move(arr_lines[0]),
-		[](auto&& left, auto&& right) 
-		{
-			return left + '\n' + right;
-		});
+	constexpr size_t size() const
+	{
+		return Size;
+	}
+
+	constexpr auto begin()
+	{
+		return m_array.data();
+	}
+		
+	constexpr auto end()
+	{
+		return m_array.data() + size();
+	}	
+	
+	constexpr auto cbegin() const
+	{
+		return m_array.data();
+	}
+		
+	constexpr auto cend() const
+	{
+		return m_array.data() + size();
+	}
+
+	constexpr std::string_view data() const
+	{
+		return std::string_view{m_array.data(), m_array.size()};
+	}
+
+	template<std::size_t LeftSize, std::size_t RightSize>
+	friend constexpr auto operator+(const FixedStr<LeftSize>& t_left, const FixedStr<RightSize>& t_right);
+};
+
+template<std::size_t Size>
+FixedStr(const char(&)[Size]) -> FixedStr<Size - 1>;
+
+template<std::size_t LeftSize, std::size_t RightSize>
+FixedStr(FixedStr<LeftSize> t_left, FixedStr<RightSize> t_right) -> FixedStr<LeftSize + RightSize>;
+
+template<std::size_t LeftSize, std::size_t RightSize>
+constexpr auto operator+(const FixedStr<LeftSize>& t_left, const FixedStr<RightSize>& t_right)
+{
+	return FixedStr(t_left, t_right);
+};
+
+
+template<typename T, typename... Args> requires std::is_convertible_v<T, const char*> && (std::is_convertible_v<Args, const char*> && ...)
+constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
+{
+	const auto begin = FixedStr{ t_firstLine } + FixedStr{ "{:.2f}s" };
+	
+	if constexpr (sizeof...(t_lines) == 0)
+	{
+		return begin;
+	}
+	else
+	{
+		const auto end = ((FixedStr{ "\n" } + FixedStr{ t_lines }) + ...);
+		return begin + end;
+	}
 }
 
-constexpr std::string GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
+
+std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
 {
 	using namespace UnionCore;
+
+	static constexpr auto languages = std::make_tuple
+	(
+		//Lang_Eng
+		SetWaitMessage("Wait ", "or press enter to continue..."), 
+		//Lang_Pol
+		SetWaitMessage("Poczekaj ", "lub naciœnij enter, by kontynuowaæ...")
+	);
+
 	switch (t_id)
 	{
 	case Lang_Eng: 
-		return SetWaitMessage("Wait ","or press enter to continue...");
+		return std::get<0>(languages).data();
 	case Lang_Pol:
-		return SetWaitMessage("Poczekaj ", "lub naciœnij enter, by kontynuowaæ...");
+		return std::get<1>(languages).data();
 	default:
-		return SetWaitMessage("Wait ", "or press enter to continue...");
-	/*
-	case Lang_Eng: return "Wait {:.2f}s\n or press enter to continue...";
-	case Lang_Pol: return "Poczekaj {:.2f}s\n lub naciœnij enter, by kontynuowaæ...";
-	default:
-		return "Wait {:.2f}s\n or press enter to continue...";
-	*/
+		return std::get<0>(languages).data();
 	}
+	return {};
 }
 
 enum class eAfterDeath

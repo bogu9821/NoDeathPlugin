@@ -11,61 +11,11 @@
 
 namespace GOTHIC_ENGINE
 {
-	class zSTRING_back_insert_iterator
-	{
-	public:
-		using iterator_category = std::output_iterator_tag;
-		using value_type = void;
-		using pointer = void;
-		using reference = void;
-
-		using container_type = zSTRING;
-
-#ifdef __cpp_lib_concepts
-		using difference_type = ptrdiff_t;
-#else
-		using difference_type = void;
-#endif // __cpp_lib_concepts
-
-		_CONSTEXPR20 explicit zSTRING_back_insert_iterator(zSTRING& _Cont) noexcept /* strengthened */
-			: container(_STD addressof(_Cont)) {}
-
-		zSTRING_back_insert_iterator& operator=(char _Val) {
-			container->Align(zSTR_LEFT, container->Length()+1, _Val);
-			return *this;
-		}
-
-
-		_NODISCARD _CONSTEXPR20 zSTRING_back_insert_iterator& operator*() noexcept /* strengthened */ {
-			return *this;
-		}
-
-		_CONSTEXPR20 zSTRING_back_insert_iterator& operator++() noexcept /* strengthened */ {
-			return *this;
-		}
-
-		_CONSTEXPR20 zSTRING_back_insert_iterator operator++(int) noexcept /* strengthened */ {
-			return *this;
-		}
-
-	protected:
-		zSTRING* container;
-	};
-
-
 	template<typename ...Args>
 	inline zSTRING FormatString(const std::string_view t_text, Args&&... t_args)
 	{
-		std::basic_format_args<std::format_context> args = std::make_format_args(std::forward<Args>(t_args)...);
-		
-		const auto size = args._Estimate_required_capacity() + 1;
-		auto buffer = std::make_unique<char[]>(size);
-		buffer[size - 1] = '\0';
-
-		//no reserve method
-		zSTRING formattedText{ buffer.get() };
-		
-		std::vformat_to(zSTRING_back_insert_iterator{ formattedText }, t_text, args);
+		const auto formattedStr = std::vformat(t_text, std::make_format_args(std::forward<Args>(t_args)...));
+		zSTRING formattedText{ formattedStr.c_str() };
 
 		return formattedText;
 	}
