@@ -1,14 +1,12 @@
 // Supported with union (c) 2020 Union team
 // Union HEADER file
 
-#include <vector>
 #include <filesystem>
 #include <charconv>
 #include <ranges>
 
 namespace GOTHIC_ENGINE
 {
-
 	class SaveDeleter
 	{
 	public:
@@ -20,11 +18,11 @@ namespace GOTHIC_ENGINE
 		static bool IsSavePath(const std::filesystem::path& t_path, const std::vector<int>& t_saveSlots)
 		{
 			auto upper = [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); };
-	
+
 			const auto pathName = t_path.filename().string();
 			const auto upperPathName = pathName | (std::views::transform(upper) | std::ranges::to<std::string>());
 
-			
+
 			if (upperPathName == "CURRENT")
 			{
 				return true;
@@ -42,8 +40,8 @@ namespace GOTHIC_ENGINE
 			{
 				int nr;
 
-				const auto begin = upperPathName.c_str() + saveNameBegin.size();
-				const auto end = upperPathName.c_str() + upperPathName.size();
+				const auto begin = std::next(upperPathName.c_str(), saveNameBegin.size());
+				const auto end = std::next(upperPathName.c_str(), upperPathName.size());
 
 				auto error = std::from_chars(begin, end, nr);
 
@@ -52,7 +50,11 @@ namespace GOTHIC_ENGINE
 					return false;
 				}
 
-				return std::ranges::any_of(t_saveSlots, [nr](const auto& slot) { return slot == nr; });
+				return std::ranges::any_of(t_saveSlots,
+					[nr](const auto& slot)
+					{
+						return slot == nr;
+					});
 			}
 
 			return false;
@@ -94,7 +96,7 @@ namespace GOTHIC_ENGINE
 					ReinitSaveManager(slots);
 				}
 			}
-			catch (std::filesystem::filesystem_error& ex)
+			catch (const std::filesystem::filesystem_error& ex)
 			{
 				LogWarning(ex.what());
 			}
@@ -113,7 +115,7 @@ namespace GOTHIC_ENGINE
 			{
 
 				if (zoptions)
-				{	
+				{
 					auto file = zoptions->GetDir(DIR_SAVEGAMES);
 					if (file)
 						return file->GetFullPath().ToChar();
@@ -133,7 +135,7 @@ namespace GOTHIC_ENGINE
 					}
 				}
 			}
-			catch (std::filesystem::filesystem_error& ex)
+			catch (const std::filesystem::filesystem_error& ex)
 			{
 				PrintLineCmd(ex.what());
 			}
@@ -142,55 +144,61 @@ namespace GOTHIC_ENGINE
 		}
 
 
-		private:
-			static std::vector<int> GetSavedSlots()
+	private:
+		static std::vector<int> GetSavedSlots()
+		{
+
+			const auto saveManager = gameMan->savegameManager;
+
+			if (!saveManager)
+				return{};
+
+
+			std::vector<int> vec; vec.reserve(20);
+
+			const auto& infoList = saveManager->infoList;
+
+			for (const auto i : std::views::iota(0, infoList.GetNum()))
 			{
-
-				const auto saveManager = gameMan->savegameManager;
-
-				if (!saveManager)
-					return{};
-
-
-				std::vector<int> vec; vec.reserve(20);
-
-				const auto& infoList = saveManager->infoList;
-
-				for (const auto i : std::views::iota(0, infoList.GetNum()))
-				{
-					vec.push_back(infoList[i]->m_SlotNr);
-				}
-
-				return vec;
+				vec.push_back(infoList[i]->m_SlotNr);
 			}
 
-			static void ReinitSaveManager(const std::vector<int>& slots)
+			return vec;
+		}
+
+		static void ReinitSaveManager(const std::vector<int>& slots)
+		{
+			if (ogame->savegameManager)
 			{
-				if (ogame->savegameManager)
+				auto const saveMan = ogame->savegameManager;
+
+				for (int i = 0; i < saveMan->infoList.GetNum(); i++)
 				{
-					auto const saveMan = ogame->savegameManager;
+					const auto nr = saveMan->infoList[i]->m_SlotNr;
 
-					for (int i = 0; i < saveMan->infoList.GetNum(); i++)
+					if (!std::ranges::any_of(slots,
+						[nr](const auto& slot)
+						{
+							return slot == nr;
+						}))
 					{
-						const auto nr = saveMan->infoList[i]->m_SlotNr;
-
-						if (!std::ranges::any_of(slots, [nr](const auto& slot) { return slot == nr; }))
-							continue;
-
-						if (saveMan->infoList[i]->refCtr > 1)
-						{
-							LogWarning("saveMan->infoList[i]->refCtr > 1");
-						}
-						else
-						{
-							saveMan->infoList[i]->Release();
-							saveMan->infoList[i] = new oCSavegameInfo(nr);
-						}
+						continue;
 					}
 
-					saveMan->Reinit();
-
+					if (saveMan->infoList[i]->refCtr > 1)
+					{
+						LogWarning("saveMan->infoList[i]->refCtr > 1");
+					}
+					else
+					{
+						saveMan->infoList[i]->Release();
+						saveMan->infoList[i] = new oCSavegameInfo(nr);
+					}
 				}
+
+				saveMan->Reinit();
+
 			}
+		}
 	};
 }

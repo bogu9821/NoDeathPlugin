@@ -1,24 +1,13 @@
 // Supported with union (c) 2020 Union team
 // Union HEADER file
-
-#include <fstream>
 #include <chrono>
-#include <vector>
 #include <string>
-#include <optional>
 #include <ranges>
 
 enum class eAfterDeath;
 
 namespace GOTHIC_ENGINE
 {
-	struct SingleInputHelper
-	{
-		SingleInputHelper() { zinput->ProcessInputEvents(); }
-		~SingleInputHelper() { zinput->ClearKeyBuffer(); }
-	};
-
-
 	class NoDeath
 	{
 	public:
@@ -130,10 +119,9 @@ namespace GOTHIC_ENGINE
 
 				if (m_fadeScreen)
 				{
-					const auto text = GetDefaultLocalizedMessage(UnionCore::Union.GetSystemLanguage());
+					const auto language = UnionCore::Union.GetSystemLanguage();
 
-					m_fadeScreen->Fade(msElapsed, m_waitTime, std::string_view{text});
-
+					m_fadeScreen->Fade(msElapsed, m_waitTime, GetDefaultLocalizedMessage(language));
 				}
 
 			}

@@ -1,17 +1,40 @@
 // Supported with union (c) 2020 Union team
 // Union HEADER file
-#ifndef NODEATH_UTILITY
-#define NODEATH_UTILITY
-
 #include <vector>
 #include <numeric>
 #include <array>
+#include <format>
 
+namespace GOTHIC_ENGINE
+{
+	template<typename ...Args>
+	inline zSTRING FormatString(const std::string_view t_text, Args&&... t_args)
+	{
+		const auto formattedStr = std::vformat(t_text, std::make_format_args(std::forward<Args>(t_args)...));
+		zSTRING formattedText{ formattedStr.c_str() };
+
+		return formattedText;
+	}
+
+	struct SingleInputHelper
+	{
+		SingleInputHelper() { zinput->ProcessInputEvents(); }
+		~SingleInputHelper() { zinput->ClearKeyBuffer(); }
+	};
+}
+
+#ifndef NODEATH_UTILITY
+#define NODEATH_UTILITY
+
+enum class eAfterDeath
+{
+	NOTHING, QUIT, NEWGAME, DELETEONLY
+};
 
 template<typename... Args>
 inline void PrintCmd(Args&&... args)
 {
-	((cmd << std::forward<Args>(args)), ...);
+	(void)(((cmd << std::forward<Args>(args))), ...);
 }
 
 template<typename... Args>
@@ -46,13 +69,13 @@ constexpr std::string_view SystemLangIDToString(const UnionCore::TSystemLangID t
 template<std::size_t Size>
 class FixedStr
 {
-	std::array<char, Size +1> m_array{};
+	std::array<char, Size+1> m_array{};
 	
 public:
 
 	constexpr FixedStr(const char(&source)[Size+1])
 	{
-		std::copy(std::begin(source), std::end(source), begin());
+		std::copy(std::cbegin(source), std::cend(source), begin());
 	}
 
 	template<std::size_t LeftSize, std::size_t RightSize>
@@ -61,35 +84,35 @@ public:
 		static_assert(LeftSize + RightSize == Size);
 
 		std::copy(t_left.cbegin(), t_left.cend(), begin());
-		std::copy(t_right.cbegin(), t_right.cend(), begin() + t_left.size());
+		std::copy(t_right.cbegin(), t_right.cend(), std::next(begin(), t_left.size()));
 	}
 
-	constexpr size_t size() const
+	constexpr size_t size() const noexcept
 	{
 		return Size;
 	}
 
-	constexpr auto begin()
+	constexpr char* begin()
 	{
 		return m_array.data();
 	}
 		
-	constexpr auto end()
+	constexpr char* end()
 	{
-		return m_array.data() + size();
+		return std::next(m_array.data(), size());
 	}	
 	
-	constexpr auto cbegin() const
+	constexpr const char* const cbegin() const
 	{
 		return m_array.data();
 	}
 		
-	constexpr auto cend() const
+	constexpr const char* const cend() const
 	{
-		return m_array.data() + size();
+		return std::next(m_array.data(), size());
 	}
 
-	constexpr std::string_view data() const
+	constexpr std::string_view data() const noexcept
 	{
 		return std::string_view{m_array.data(), m_array.size()};
 	}
@@ -114,7 +137,7 @@ constexpr auto operator+(const FixedStr<LeftSize>& t_left, const FixedStr<RightS
 template<typename T, typename... Args> requires std::is_convertible_v<T, const char*> && (std::is_convertible_v<Args, const char*> && ...)
 constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 {
-	const auto begin = FixedStr{ t_firstLine } + FixedStr{ "{:.2f}s" };
+	const auto begin = FixedStr{ std::forward<T>(t_firstLine) } + FixedStr{ "{:.2f}s" };
 	
 	if constexpr (sizeof...(t_lines) == 0)
 	{
@@ -122,7 +145,7 @@ constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 	}
 	else
 	{
-		const auto end = ((FixedStr{ "\n" } + FixedStr{ t_lines }) + ...);
+		const auto end = ((FixedStr{ "\n" } + FixedStr{ std::forward<Args>(t_lines) }) + ...);
 		return begin + end;
 	}
 }
@@ -154,10 +177,5 @@ inline std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangI
 		}, languages
 	);
 }
-
-enum class eAfterDeath
-{
-	NOTHING, QUIT, NEWGAME, DELETEONLY
-};
 
 #endif

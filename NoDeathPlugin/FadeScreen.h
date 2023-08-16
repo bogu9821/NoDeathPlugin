@@ -5,21 +5,9 @@
 #include <algorithm>
 #include <chrono>
 #include <ranges>
-#include <format>
-
-
 
 namespace GOTHIC_ENGINE
 {
-	template<typename ...Args>
-	inline zSTRING FormatString(const std::string_view t_text, Args&&... t_args)
-	{
-		const auto formattedStr = std::vformat(t_text, std::make_format_args(std::forward<Args>(t_args)...));
-		zSTRING formattedText{ formattedStr.c_str() };
-
-		return formattedText;
-	}
-
 	class FadeInScreen
 	{
 	public:
