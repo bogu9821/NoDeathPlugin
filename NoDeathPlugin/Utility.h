@@ -134,22 +134,25 @@ inline std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangI
 
 	static constexpr auto languages = std::make_tuple
 	(
-		//Lang_Eng
-		SetWaitMessage("Wait ", "or press enter to continue..."), 
-		//Lang_Pol
-		SetWaitMessage("Poczekaj ", "lub naciœnij enter, by kontynuowaæ...")
+		std::make_pair(Lang_Eng,SetWaitMessage("Wait ", "or press enter to continue...")),
+		std::make_pair(Lang_Pol,SetWaitMessage("Poczekaj ", "lub naciœnij enter, by kontynuowaæ..."))
 	);
 
-	switch (t_id)
-	{
-	case Lang_Eng: 
-		return std::get<0>(languages).data();
-	case Lang_Pol:
-		return std::get<1>(languages).data();
-	default:
-		return std::get<0>(languages).data();
-	}
-	return {};
+
+	return std::apply
+	(
+		[t_id](const auto& ... args)  -> std::string_view
+		{
+			std::string_view s;
+
+			(((t_id == args.first) ? (s = args.second.data(), true) : false)
+				|| ... || (s = std::get<0>(languages).second.data(), true));
+
+			return s;
+
+
+		}, languages
+	);
 }
 
 enum class eAfterDeath
