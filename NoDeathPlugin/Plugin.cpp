@@ -20,10 +20,7 @@ namespace GOTHIC_ENGINE {
 
   void Game_Loop() {
 
-      if (noDeath)
-      {
-          noDeath->OnLoop();
-      }
+       noDeath->OnLoop();   
   }
 
   void Game_PostLoop() {

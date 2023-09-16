@@ -8,6 +8,7 @@
 namespace GOTHIC_ENGINE
 {
 	template<typename ...Args>
+	[[nodiscard]]
 	inline zSTRING FormatString(const std::string_view t_text, Args&&... t_args)
 	{
 		const auto formattedStr = std::vformat(t_text, std::make_format_args(std::forward<Args>(t_args)...));
@@ -50,36 +51,55 @@ inline void LogWarning(Args&&... args)
 	PrintLineCmd("NoDeath :: ", std::forward<Args>(args)...);
 }
 
-
+[[nodiscard]]
 constexpr std::string_view SystemLangIDToString(const UnionCore::TSystemLangID t_id)
 {
 	using namespace UnionCore;
 	switch (t_id)
 	{
-	case Lang_Rus: return "Russian";
-	case Lang_Eng: return "English";
-	case Lang_Deu: return "German";
-	case Lang_Pol: return "Polish";
+	case Lang_Rus: 
+		return "Russian";
+	case Lang_Eng: 
+		return "English";
+	case Lang_Deu: 
+		return "German";
+	case Lang_Pol: 
+		return "Polish";
 	default:
 		return "Other";
 	}
 }
 
+[[nodiscard]]
+inline constexpr char CharToUpperSimple(const char t_char)
+{
+	return t_char >= 'a' && t_char <= 'z' 
+										? static_cast<char>(static_cast<unsigned char>(t_char) - 'a' + 'A') 
+										: t_char;
+}
+
+[[nodiscard]]
+inline constexpr char CharToLowerSimple(const char t_char)
+{
+	return t_char >= 'A' && t_char <= 'Z' 
+										? static_cast<char>(static_cast<unsigned char>(t_char) + ('a' - 'A')) 
+										: t_char;
+}
 
 template<std::size_t Size>
 class FixedStr
 {
-	std::array<char, Size+1> m_array{};
-	
+	std::array<char, Size + 1> m_array{};
+
 public:
 
-	constexpr FixedStr(const char(&source)[Size+1])
+	constexpr FixedStr(const char(&source)[Size + 1])
 	{
 		std::copy(std::cbegin(source), std::cend(source), begin());
 	}
 
 	template<std::size_t LeftSize, std::size_t RightSize>
-	constexpr FixedStr(const FixedStr<LeftSize>& t_left,const FixedStr<RightSize>& t_right)
+	constexpr FixedStr(const FixedStr<LeftSize>& t_left, const FixedStr<RightSize>& t_right)
 	{
 		static_assert(LeftSize + RightSize == Size);
 
@@ -87,37 +107,62 @@ public:
 		std::copy(t_right.cbegin(), t_right.cend(), std::next(begin(), t_left.size()));
 	}
 
+	constexpr auto& upper()
+	{
+		for (size_t i = 0; i < Size - 1; i++)
+		{
+			m_array[i] = CharToUpperSimple(m_array[i]);
+		}
+		return *this;
+	}
+
+	constexpr auto& lower()
+	{
+		for (size_t i = 0; i < Size - 1; i++)
+		{
+			m_array[i] = CharToUpperSimplified(m_array[i]);
+		}
+		return *this;
+	}
+
+	[[nodiscard]]
 	constexpr size_t size() const noexcept
 	{
 		return Size;
 	}
 
+	[[nodiscard]]
 	constexpr char* begin()
 	{
 		return m_array.data();
 	}
-		
+
+	[[nodiscard]]
 	constexpr char* end()
 	{
 		return std::next(m_array.data(), size());
-	}	
-	
+	}
+
+	[[nodiscard]]
 	constexpr const char* const cbegin() const
 	{
 		return m_array.data();
 	}
-		
+
+	[[nodiscard]]
 	constexpr const char* const cend() const
 	{
 		return std::next(m_array.data(), size());
 	}
 
+	[[nodiscard]]
 	constexpr std::string_view data() const noexcept
 	{
 		return std::string_view{m_array.data(), m_array.size()};
 	}
 
 	template<std::size_t LeftSize, std::size_t RightSize>
+	[[nodiscard]]
 	friend constexpr auto operator+(const FixedStr<LeftSize>& t_left, const FixedStr<RightSize>& t_right);
 };
 
@@ -135,6 +180,7 @@ constexpr auto operator+(const FixedStr<LeftSize>& t_left, const FixedStr<RightS
 
 
 template<typename T, typename... Args> requires std::is_convertible_v<T, const char*> && (std::is_convertible_v<Args, const char*> && ...)
+[[nodiscard]]
 constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 {
 	const auto begin = FixedStr{ std::forward<T>(t_firstLine) } + FixedStr{ "{:.2f}s" };
@@ -150,7 +196,7 @@ constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 	}
 }
 
-
+[[nodiscard]]
 inline std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
 {
 	using namespace UnionCore;

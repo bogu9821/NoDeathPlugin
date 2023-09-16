@@ -63,11 +63,13 @@ namespace GOTHIC_ENGINE
 
 		}
 
+		[[nodiscard]]
 		bool Started() const noexcept
 		{
 			return m_started;
 		}
 
+		[[nodiscard]]
 		bool ShouldExit() const noexcept
 		{
 			return m_done && m_stepType == eAfterDeath::QUIT;

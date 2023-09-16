@@ -15,6 +15,7 @@ namespace GOTHIC_ENGINE
 		SaveDeleter(SaveDeleter&) = delete;
 		SaveDeleter& operator=(SaveDeleter&) = delete;
 
+		[[nodiscard]]
 		static bool IsSavePath(const std::filesystem::path& t_path, const std::vector<int>& t_saveSlots)
 		{
 			auto upper = [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); };
@@ -104,7 +105,7 @@ namespace GOTHIC_ENGINE
 			return 1;
 		}
 
-
+		[[nodiscard]]
 		static std::vector<std::filesystem::path> GetPaths()
 		{
 
@@ -145,6 +146,8 @@ namespace GOTHIC_ENGINE
 
 
 	private:
+
+		[[nodiscard]]
 		static std::vector<int> GetSavedSlots()
 		{
 
@@ -172,7 +175,7 @@ namespace GOTHIC_ENGINE
 			{
 				auto const saveMan = ogame->savegameManager;
 
-				for (int i = 0; i < saveMan->infoList.GetNum(); i++)
+				for(auto const i : std::views::iota(0, saveMan->infoList.GetNum()))
 				{
 					const auto nr = saveMan->infoList[i]->m_SlotNr;
 
