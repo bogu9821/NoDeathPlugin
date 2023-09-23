@@ -4,6 +4,8 @@
 #include <numeric>
 #include <array>
 #include <format>
+#include <ranges>
+#include <algorithm>
 
 namespace GOTHIC_ENGINE
 {
@@ -109,19 +111,13 @@ public:
 
 	constexpr auto& upper()
 	{
-		for (size_t i = 0; i < Size - 1; i++)
-		{
-			m_array[i] = CharToUpperSimple(m_array[i]);
-		}
+		std::ranges::transform(m_array,std::begin(m_array), CharToUpperSimple);
 		return *this;
 	}
 
 	constexpr auto& lower()
 	{
-		for (size_t i = 0; i < Size - 1; i++)
-		{
-			m_array[i] = CharToUpperSimplified(m_array[i]);
-		}
+		std::ranges::transform(m_array, std::begin(m_array), CharToLowerSimple);
 		return *this;
 	}
 
