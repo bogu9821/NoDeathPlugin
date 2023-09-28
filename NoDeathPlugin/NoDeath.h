@@ -3,6 +3,7 @@
 #include <chrono>
 #include <string>
 #include <ranges>
+#include <source_location>
 
 enum class eAfterDeath;
 
@@ -17,7 +18,13 @@ namespace GOTHIC_ENGINE
 
 		NoDeath()
 		{
+			CheckOptions();
+		}
 
+		void CheckOptions()
+		{
+			assert(zoptions);
+			
 			const auto realWaitTime = zoptions->ReadReal("NODEATH", "WaitTime", 5.f);
 
 			m_waitTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<float>(realWaitTime));
@@ -30,7 +37,6 @@ namespace GOTHIC_ENGINE
 			auto readedStep = zoptions->ReadInt("NODEATH", "AfterDeath", stepMin);
 
 			m_stepType = static_cast<eAfterDeath>(std::clamp(readedStep, stepMin, stepMax));
-
 		}
 
 		void Start(std::unique_ptr<FadeInScreen> t_fadeScreen)

@@ -88,6 +88,7 @@ namespace GOTHIC_ENGINE {
   }
 
   void Game_ApplyOptions() {
+      noDeath->CheckOptions();
   }
 
   /*
@@ -141,6 +142,6 @@ namespace GOTHIC_ENGINE {
     Enabled(False) Game_Pause,
     Enabled(False) Game_Unpause,
     Enabled(False) Game_DefineExternals,
-    Enabled(False) Game_ApplyOptions
+    Enabled(True) Game_ApplyOptions
   );
 }
