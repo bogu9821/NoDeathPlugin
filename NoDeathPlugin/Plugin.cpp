@@ -10,6 +10,7 @@ namespace GOTHIC_ENGINE {
   }
   
   void Game_Init() {
+      noDeath = std::make_unique<NoDeath>();
   }
 
   void Game_Exit() {
@@ -43,9 +44,9 @@ namespace GOTHIC_ENGINE {
   void LoadBegin() {
   }
 
-  void LoadEnd() 
-  {
-      noDeath = std::make_unique<NoDeath>();
+  void LoadEnd(){
+      
+      ResetNoDeath();
   }
 
   void Game_LoadBegin_NewGame() {
@@ -136,12 +137,12 @@ namespace GOTHIC_ENGINE {
     Enabled(False) Game_LoadBegin_SaveGame,
     Enabled( AppDefault ) Game_LoadEnd_SaveGame,
     Enabled(False) Game_LoadBegin_ChangeLevel,
-    Enabled( AppDefault ) Game_LoadEnd_ChangeLevel,
+    Enabled( False ) Game_LoadEnd_ChangeLevel,
     Enabled(False) Game_LoadBegin_Trigger,
     Enabled( AppDefault ) Game_LoadEnd_Trigger,
     Enabled(False) Game_Pause,
     Enabled(False) Game_Unpause,
     Enabled(False) Game_DefineExternals,
-    Enabled(True) Game_ApplyOptions
+    Enabled( AppDefault ) Game_ApplyOptions
   );
 }

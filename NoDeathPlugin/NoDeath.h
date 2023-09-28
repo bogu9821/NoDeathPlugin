@@ -60,6 +60,12 @@ namespace GOTHIC_ENGINE
 			return m_done && m_stepType == eAfterDeath::QUIT;
 		}
 
+		[[nodiscard]]
+		bool ShouldReset() const noexcept
+		{
+			return m_done && m_stepType != eAfterDeath::QUIT;
+		}
+
 		void OnLoop()
 		{
 			if (m_stepType == eAfterDeath::NOTHING)
