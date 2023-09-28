@@ -1,4 +1,4 @@
-// Supported with union (c) 2020 Union team
+ï»¿// Supported with union (c) 2020 Union team
 // Union HEADER file
 #include <vector>
 #include <numeric>
@@ -31,7 +31,11 @@ namespace GOTHIC_ENGINE
 
 enum class eAfterDeath
 {
-	NOTHING, QUIT, NEWGAME, DELETEONLY
+	NOTHING,
+	QUIT, 
+	NEWGAME, 
+	DELETEONLY, 
+	MAX
 };
 
 template<typename... Args>
@@ -59,13 +63,13 @@ constexpr std::string_view SystemLangIDToString(const UnionCore::TSystemLangID t
 	using namespace UnionCore;
 	switch (t_id)
 	{
-	case Lang_Rus: 
+	case Lang_Rus:
 		return "Russian";
-	case Lang_Eng: 
+	case Lang_Eng:
 		return "English";
-	case Lang_Deu: 
+	case Lang_Deu:
 		return "German";
-	case Lang_Pol: 
+	case Lang_Pol:
 		return "Polish";
 	default:
 		return "Other";
@@ -75,17 +79,17 @@ constexpr std::string_view SystemLangIDToString(const UnionCore::TSystemLangID t
 [[nodiscard]]
 inline constexpr char CharToUpperSimple(const char t_char)
 {
-	return t_char >= 'a' && t_char <= 'z' 
-										? static_cast<char>(static_cast<unsigned char>(t_char) - 'a' + 'A') 
-										: t_char;
+	return t_char >= 'a' && t_char <= 'z'
+		? static_cast<char>(static_cast<unsigned char>(t_char) - 'a' + 'A')
+		: t_char;
 }
 
 [[nodiscard]]
 inline constexpr char CharToLowerSimple(const char t_char)
 {
-	return t_char >= 'A' && t_char <= 'Z' 
-										? static_cast<char>(static_cast<unsigned char>(t_char) + ('a' - 'A')) 
-										: t_char;
+	return t_char >= 'A' && t_char <= 'Z'
+		? static_cast<char>(static_cast<unsigned char>(t_char) + ('a' - 'A'))
+		: t_char;
 }
 
 template<std::size_t Size>
@@ -111,7 +115,7 @@ public:
 
 	constexpr auto& upper()
 	{
-		std::ranges::transform(m_array,std::begin(m_array), CharToUpperSimple);
+		std::ranges::transform(m_array, std::begin(m_array), CharToUpperSimple);
 		return *this;
 	}
 
@@ -180,7 +184,7 @@ template<typename T, typename... Args> requires std::is_convertible_v<T, const c
 constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 {
 	const auto begin = FixedStr{ std::forward<T>(t_firstLine) } + FixedStr{ "{:.2f}s" };
-	
+
 	if constexpr (sizeof...(t_lines) == 0)
 	{
 		return begin;
@@ -199,8 +203,8 @@ inline std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangI
 
 	static constexpr auto languages = std::make_tuple
 	(
-		std::make_pair(Lang_Eng,SetWaitMessage("Wait ", "or press enter to continue...")),
-		std::make_pair(Lang_Pol,SetWaitMessage("Poczekaj ", "lub naciœnij enter, by kontynuowaæ..."))
+		std::make_pair(Lang_Eng, SetWaitMessage("Wait ", "or press enter to continue...")),
+		std::make_pair(Lang_Pol, SetWaitMessage("Poczekaj ", "lub naciÅ›nij enter, by kontynuowaÄ‡..."))
 	);
 
 

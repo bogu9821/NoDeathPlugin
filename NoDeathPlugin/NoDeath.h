@@ -24,33 +24,12 @@ namespace GOTHIC_ENGINE
 
 			m_blockInput = zoptions->ReadBool("NODEATH", "BlockInput", 1);
 
-			auto readedStep = zoptions->ReadString("NODEATH", "AfterDeath", "NOTHING");
+			const auto stepMin = std::to_underlying(eAfterDeath::NOTHING);
+			const auto stepMax = std::to_underlying(eAfterDeath::MAX);
 
-			const std::string_view view{ readedStep.ToChar() };
+			auto readedStep = zoptions->ReadInt("NODEATH", "AfterDeath", stepMin);
 
-			using enum eAfterDeath;
-			if (view == "NEWGAME")
-			{
-				m_stepType = NEWGAME;
-			}
-			else if (view == "QUIT")
-			{
-				m_stepType = QUIT;
-			}
-			else if (view == "DELETEONLY")
-			{
-				m_stepType = DELETEONLY;
-			}
-			else
-			{
-				m_stepType = NOTHING;
-
-				if (view != "NOTHING")
-				{
-					LogWarning("probably bad end step ", view.data());
-					zoptions->WriteString("NODEATH", "AfterDeath", "NOTHING", 0);
-				}
-			}
+			m_stepType = static_cast<eAfterDeath>(std::clamp(readedStep, stepMin, stepMax));
 
 		}
 
