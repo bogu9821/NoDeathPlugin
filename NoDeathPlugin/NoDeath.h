@@ -13,6 +13,7 @@ namespace GOTHIC_ENGINE
 	
 	class NoDeath
 	{
+		inline static std::string_view s_fadeMessage{};
 	public:
 
 		NoDeath(NoDeath&) = delete;
@@ -21,6 +22,7 @@ namespace GOTHIC_ENGINE
 		NoDeath()
 		{
 			CheckOptions();
+			s_fadeMessage = GetDefaultLocalizedMessage(UnionCore::Union.GetSystemLanguage());
 		}
 
 		void CheckOptions()
@@ -88,26 +90,23 @@ namespace GOTHIC_ENGINE
 			}
 			else
 			{
+				using std::chrono::duration_cast;
+				using std::chrono::milliseconds;
 
-				const auto msElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - m_startPoint);
+				const auto msElapsed = std::min(duration_cast<milliseconds>(Clock::now() - m_startPoint),m_waitTime);
 	
 				SaveDeleter::TryDelete();
+				
+				if (m_fadeScreen)
+				{
+					m_fadeScreen->Fade(msElapsed, m_waitTime, s_fadeMessage);
+				}
 
 				const SingleInputHelper optionalInputBlocker{ m_blockInput };
 
-
-				if (msElapsed >= m_waitTime || zKeyToggled(KEY_RETURN))
+				if (msElapsed == m_waitTime || zKeyToggled(KEY_RETURN))
 				{
 					EndEffect();
-					return;
-				}
-
-
-				if (m_fadeScreen)
-				{
-					const auto language = UnionCore::Union.GetSystemLanguage();
-
-					m_fadeScreen->Fade(msElapsed, m_waitTime, GetDefaultLocalizedMessage(language));
 				}
 
 			}
