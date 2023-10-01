@@ -61,13 +61,13 @@ namespace GOTHIC_ENGINE
 			return false;
 		}
 
-		static bool TryDelete()
+		static void TryDelete()
 		{
 			const std::vector<int> slots = SaveDeleter::GetSavedSlots();
 
 			if (slots.empty())
 			{
-				return false;
+				return;
 			}
 
 			try
@@ -100,8 +100,6 @@ namespace GOTHIC_ENGINE
 			{
 				LogWarning(ex.what());
 			}
-
-			return 1;
 		}
 
 		[[nodiscard]]
