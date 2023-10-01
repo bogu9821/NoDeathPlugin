@@ -211,15 +211,18 @@ constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 	}
 }
 
+
+
 [[nodiscard]]
 inline std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
 {
-	using namespace UnionCore;
-
 	static constexpr auto languages = std::make_tuple
 	(
 		std::make_pair(Lang_Eng, SetWaitMessage("Wait ", "or press enter to continue...")),
-		std::make_pair(Lang_Pol, SetWaitMessage("Poczekaj ", "lub naciśnij enter, by kontynuować..."))
+		std::make_pair(Lang_Pol, SetWaitMessage("Poczekaj ", "lub naciśnij enter, by kontynuować...")),
+		std::make_pair(Lang_Deu, SetWaitMessage("Warten Sie ", "oder drücken Sie die Eingabetaste, um fortzufahren...")),
+		//TODO add ru
+		//std::make_pair(Lang_Rus, SetWaitMessage("", ""))
 	);
 
 
