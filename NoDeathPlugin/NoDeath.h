@@ -3,12 +3,14 @@
 #include <chrono>
 #include <string>
 #include <ranges>
-#include <source_location>
 
 enum class eAfterDeath;
 
 namespace GOTHIC_ENGINE
 {
+	class NoDeath;
+	extern std::unique_ptr<NoDeath> noDeath;
+	
 	class NoDeath
 	{
 	public:
@@ -37,6 +39,8 @@ namespace GOTHIC_ENGINE
 			auto readedStep = zoptions->ReadInt("NODEATH", "AfterDeath", stepMin);
 
 			m_stepType = static_cast<eAfterDeath>(std::clamp(readedStep, stepMin, stepMax));
+
+			m_compatibilityMode = zoptions->ReadInt("NODEATH", "CompatibilityMode", 1) != 0;
 		}
 
 		void Start(std::unique_ptr<FadeInScreen> t_fadeScreen)
@@ -68,22 +72,11 @@ namespace GOTHIC_ENGINE
 
 		void OnLoop()
 		{
-			if (m_stepType == eAfterDeath::NOTHING)
+			if (m_stepType == eAfterDeath::NOTHING || m_done)
 			{
 				return;
 			}
 			
-			if (m_done)
-			{
-				//game not exited?
-				if (ShouldExit())
-				{
-					std::exit(-1);
-				}
-
-				return;
-			}
-
 			if (Started() == false)
 			{
 				if (player && player->GetAttribute(NPC_ATR_HITPOINTS) <= 0)
@@ -96,11 +89,10 @@ namespace GOTHIC_ENGINE
 			{
 
 				const auto msElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - m_startPoint);
-
-				
+	
 				SaveDeleter::TryDelete();
 
-				const auto optionalInputBlocker = m_blockInput ? std::make_unique<SingleInputHelper>() : nullptr;
+				const SingleInputHelper optionalInputBlocker{ m_blockInput };
 
 
 				if (msElapsed >= m_waitTime || zKeyToggled(KEY_RETURN))
@@ -122,24 +114,33 @@ namespace GOTHIC_ENGINE
 		}
 
 		private:
-			void EndEffect()
+
+			void RestartGame()
 			{
-				m_fadeScreen.reset();
 
-				m_done = 1;
-
-				if (m_stepType == eAfterDeath::QUIT)
+				if (m_compatibilityMode)
 				{
-					gameMan->ExitGame();
+					zoptions->WriteString("internal", "menuAction", "NEW_GAME", 0);
+
+					zSTRING console = zoptions->commandline;
+
+					const auto replaceParam = zoptions->commandline.Search("-NOMENU", 1) == -1;
+
+					if (replaceParam)
+					{
+						zoptions->commandline = "-NOMENU" + zoptions->commandline;
+					}
+
+					gameMan->Menu(0);
+
+					if (replaceParam)
+					{
+						zoptions->commandline.Delete("-NOMENU", zTSTR_KIND::zSTR_ONLY);
+					}
+
 				}
-				else if (m_stepType == eAfterDeath::NEWGAME)
+				else
 				{
-					//zoptions->WriteString("internal", "menuAction", "NEW_GAME",0);
-					//zoptions->AddParameters("-NOMENU");
-					//gameMan->Menu(0);
-
-					//gameMan->ExitSession();
-
 					const auto& worldName = ogame->GetGameWorld()->worldFilename;
 					gameMan->GameSessionReset();
 
@@ -164,6 +165,45 @@ namespace GOTHIC_ENGINE
 				}
 			}
 
+			void ExitGame()
+			{
+				if (m_compatibilityMode)
+				{
+					gameMan->ExitGame();
+				}
+				else
+				{
+					std::exit(-1);
+				}
+			}
+
+			__declspec(noinline) void EndEffect()
+			{
+				m_fadeScreen.reset();
+
+				m_done = 1;
+
+				switch (m_stepType)
+				{
+				case eAfterDeath::QUIT:
+					ExitGame();
+					return;
+
+				case eAfterDeath::NEWGAME:
+					RestartGame();
+					return;
+
+				case eAfterDeath::NOTHING:
+				case eAfterDeath::DELETEONLY:
+					return;
+
+				case eAfterDeath::MAX:
+					std::unreachable();
+				}
+
+				assert(false);
+			}
+
 
 			std::unique_ptr<FadeInScreen> m_fadeScreen{};
 			std::chrono::milliseconds m_waitTime{ 5000 };
@@ -172,6 +212,7 @@ namespace GOTHIC_ENGINE
 			Clock::time_point m_startPoint{};
 			bool m_started{};
 			bool m_done{};
+			bool m_compatibilityMode{true};
 			eAfterDeath m_stepType{ eAfterDeath::NOTHING };
 
 			bool m_blockInput{};

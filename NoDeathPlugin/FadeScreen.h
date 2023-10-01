@@ -66,7 +66,7 @@ namespace GOTHIC_ENGINE
 				const auto x = 4096 - fontSize / 2;
 				const int y = 4096 + (m_view->FontY() * m_view->textLines.GetNum());
 
-				zCOLOR color(255, 255, 255, m_view->alpha);
+				zCOLOR color(255, 255, 255, static_cast<unsigned char>(m_view->alpha));
 
 				m_view->CreateText(x, y, line, 0.f, color, 0, 1);
 

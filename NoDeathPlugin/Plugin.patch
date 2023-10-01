@@ -1,2 +1,14 @@
-// This patch will be automatically executed after loading the plugin.
-// TODO
+//TODO patches for G1, G1A, G2
+
+
+#engine [G2A] GOTHIC II NoTR
+
+    #patch[UnInline IsGameRunning]
+        #assembler [0x0042945D]
+            mov ecx, esi
+            call 0x0042B200
+        #/assembler [0x00429469]
+
+    #/patch
+			 
+#/engine

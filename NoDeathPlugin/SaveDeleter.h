@@ -70,7 +70,6 @@ namespace GOTHIC_ENGINE
 				return false;
 			}
 
-
 			try
 			{
 				const auto paths = SaveDeleter::GetPaths();
@@ -82,7 +81,7 @@ namespace GOTHIC_ENGINE
 					if (IsSavePath(path, slots))
 					{
 						const auto num = std::filesystem::remove_all(path);
-						if (num > 0)
+						if (num > 1)
 						{
 							PrintLineCmd("deleted ", path.c_str(), " files ", num);
 
@@ -154,7 +153,9 @@ namespace GOTHIC_ENGINE
 			const auto saveManager = gameMan->savegameManager;
 
 			if (!saveManager)
+			{
 				return{};
+			}
 
 
 			std::vector<int> vec; vec.reserve(20);
@@ -175,7 +176,7 @@ namespace GOTHIC_ENGINE
 			{
 				auto const saveMan = ogame->savegameManager;
 
-				for(auto const i : std::views::iota(0, saveMan->infoList.GetNum()))
+				for(const auto i : std::views::iota(0, saveMan->infoList.GetNum()))
 				{
 					const auto nr = saveMan->infoList[i]->m_SlotNr;
 

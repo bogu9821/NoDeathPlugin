@@ -7,6 +7,7 @@
 #include "FadeScreen.h"
 #include "SaveDeleter.h"
 #include "NoDeath.h"
+#include "Hooks.h"
 #include "Plugin.h"
 #pragma endregion
 

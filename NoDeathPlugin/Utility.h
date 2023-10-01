@@ -21,8 +21,24 @@ namespace GOTHIC_ENGINE
 
 	struct SingleInputHelper
 	{
-		SingleInputHelper() { zinput->ProcessInputEvents(); }
-		~SingleInputHelper() { zinput->ClearKeyBuffer(); }
+		bool m_blocked{};
+
+		explicit SingleInputHelper(bool t_block) 
+			: m_blocked(t_block) 
+		{ 
+			if (t_block)
+			{
+				zinput->ProcessInputEvents();
+			}
+		}
+
+		~SingleInputHelper() 
+		{ 
+			if (m_blocked)
+			{
+				zinput->ClearKeyBuffer();
+			}
+		}
 	};
 }
 
@@ -162,7 +178,6 @@ public:
 	}
 
 	template<std::size_t LeftSize, std::size_t RightSize>
-	[[nodiscard]]
 	friend constexpr auto operator+(const FixedStr<LeftSize>& t_left, const FixedStr<RightSize>& t_right);
 };
 
