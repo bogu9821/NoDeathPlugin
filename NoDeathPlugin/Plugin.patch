@@ -1,14 +1,43 @@
 //TODO patches for G1, G1A, G2
 
+#engine [G1]
+    #patch [UnInline IsGameRunning]
+        #assembler [0x00427B98]
+            mov ecx, esi
+            call 0x00429570
+        #/assembler [0x00427BA4]
+    #/patch			 
+#/engine
 
-#engine [G2A] GOTHIC II NoTR
+#engine [G1A]
 
-    #patch[UnInline IsGameRunning]
+    #patch [UnInline IsGameRunning]
+        #assembler [0x0042A6CC]
+            mov ecx, esi
+            call 0x0042C140
+        #/assembler [0x0042A6D8]
+    #/patch		 
+#/engine
+
+
+#engine [G2]
+
+    #patch [UnInline IsGameRunning]
+        #assembler [0x004290E8]
+            mov ecx, esi
+            call 0x0042AEE0
+        #/assembler [0x004290F4]
+
+    #/patch		 
+#/engine
+
+#engine [G2A]
+
+    #patch [UnInline IsGameRunning]
         #assembler [0x0042945D]
             mov ecx, esi
             call 0x0042B200
         #/assembler [0x00429469]
 
-    #/patch
-			 
+    #/patch		 
 #/engine

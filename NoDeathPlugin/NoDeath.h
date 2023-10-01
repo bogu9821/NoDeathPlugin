@@ -65,10 +65,11 @@ namespace GOTHIC_ENGINE
 		}
 
 		[[nodiscard]]
-		bool ShouldReset() const noexcept
+		bool ShouldRestart() const noexcept
 		{
-			return m_done && m_stepType != eAfterDeath::QUIT;
+			return m_done && m_compatibilityMode && m_stepType == eAfterDeath::NEWGAME;
 		}
+
 
 		void OnLoop()
 		{

@@ -10,10 +10,7 @@ namespace GOTHIC_ENGINE {
     {
         if (!SaveLoadGameInfo.changeLevel)
         {
-            if (noDeath->ShouldReset())
-            {
-                noDeath = std::make_unique<NoDeath>();
-            }
+            noDeath = std::make_unique<NoDeath>();
         }
     }
 }

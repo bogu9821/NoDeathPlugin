@@ -3,14 +3,16 @@
 
 namespace GOTHIC_ENGINE {
 	
-	HOOK Hook_CGameManager__IsGameRunning PATCH(&CGameManager::IsGameRunning,&CGameManager::IsGameRunning_NoDeath);
+	HOOK Hook_CGameManager__IsGameRunning AS(&CGameManager::IsGameRunning,&CGameManager::IsGameRunning_NoDeath);
 	int CGameManager::IsGameRunning_NoDeath()
 	{
-		if (noDeath->ShouldReset())
+		const auto ret = THISCALL(Hook_CGameManager__IsGameRunning)();
+		
+		if (ret && noDeath && noDeath->ShouldRestart())
 		{
 			return 0;
 		}
 		
-		return THISCALL(Hook_CGameManager__IsGameRunning)();
+		return ret;
 	}
 }
