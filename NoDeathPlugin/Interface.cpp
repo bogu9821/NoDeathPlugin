@@ -21,6 +21,8 @@ uint RTDynamicCast_MT = (uint)__RTDynamicCast;
 #define Engine_G2  3
 #define Engine_G2A 4
 
+#undef min
+#undef max
 
 // Include headers
 #ifdef __G1
