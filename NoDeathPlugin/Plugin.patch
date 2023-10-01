@@ -1,5 +1,3 @@
-//TODO patches for G1, G1A, G2
-
 #engine [G1]
     #patch [UnInline IsGameRunning]
         #assembler [0x00427B98]
