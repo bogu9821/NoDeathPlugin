@@ -45,15 +45,6 @@ namespace GOTHIC_ENGINE
 #ifndef NODEATH_UTILITY
 #define NODEATH_UTILITY
 
-enum class eAfterDeath
-{
-	NOTHING,
-	QUIT, 
-	NEWGAME, 
-	DELETEONLY, 
-	MAX
-};
-
 template<typename... Args>
 inline void PrintCmd(Args&&... args)
 {

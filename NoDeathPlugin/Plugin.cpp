@@ -10,6 +10,7 @@ namespace GOTHIC_ENGINE {
   }
   
   void Game_Init() {
+      g_fadeMessage = GetDefaultLocalizedMessage(UnionCore::Union.GetSystemLanguage());
       noDeath = std::make_unique<NoDeath>();
   }
 

@@ -4,7 +4,17 @@
 #include <string>
 #include <ranges>
 
-enum class eAfterDeath;
+#ifndef AFTERDEATH_ENUM
+#define AFTERDEATH_ENUM
+enum class eAfterDeath
+{
+	NOTHING,
+	QUIT,
+	NEWGAME,
+	DELETEONLY,
+	MAX
+};
+#endif
 
 namespace GOTHIC_ENGINE
 {
@@ -13,7 +23,6 @@ namespace GOTHIC_ENGINE
 	
 	class NoDeath
 	{
-		inline static std::string_view s_fadeMessage{};
 	public:
 
 		NoDeath(NoDeath&) = delete;
@@ -22,7 +31,6 @@ namespace GOTHIC_ENGINE
 		NoDeath()
 		{
 			CheckOptions();
-			s_fadeMessage = GetDefaultLocalizedMessage(UnionCore::Union.GetSystemLanguage());
 		}
 
 		void CheckOptions()
@@ -99,7 +107,7 @@ namespace GOTHIC_ENGINE
 				
 				if (m_fadeScreen)
 				{
-					m_fadeScreen->Fade(msElapsed, m_waitTime, s_fadeMessage);
+					m_fadeScreen->Fade(msElapsed, m_waitTime, g_fadeMessage);
 				}
 
 				const SingleInputHelper optionalInputBlocker{ m_blockInput };
