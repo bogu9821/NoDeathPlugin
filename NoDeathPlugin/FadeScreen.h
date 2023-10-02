@@ -15,10 +15,9 @@ namespace GOTHIC_ENGINE
 		FadeInScreen(FadeInScreen&) = delete;
 		FadeInScreen& operator=(FadeInScreen&) = delete;
 
-		FadeInScreen(const std::string_view t_texture) : m_view(std::make_unique<zCView>())
+		FadeInScreen(const std::string_view t_texture) 
+			: m_view(std::make_unique<zCView>(0,0,8192,8192))
 		{
-			m_view->SetSize(8192, 8192);
-			m_view->SetPos(0, 0);
 			m_view->InsertBack(t_texture.data());
 			SetAlpha(0);
 			m_view->SetAlphaBlendFunc(zRND_ALPHA_FUNC_BLEND);
@@ -32,20 +31,16 @@ namespace GOTHIC_ENGINE
 
 			SetAlpha(static_cast<int>(std::clamp(ticksElapsed, 0ll, 255ll)));
 
-
 			screen->InsertItem(m_view.get());
 
 			const auto floatDuration = std::chrono::duration_cast<std::chrono::duration<float>>(t_timeEnd - t_timeElapsed);
 
-			const auto toEnd = floatDuration.count() > 0.f ? floatDuration.count() : 0.f;
-
+			const auto toEnd = std::max(floatDuration.count(), 0.f);
 
 			Print(toEnd, t_message);
 			m_view->Render();
 
 			screen->RemoveItem(m_view.get());
-
-
 		}
 
 	private:
