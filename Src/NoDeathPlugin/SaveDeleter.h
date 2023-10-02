@@ -18,10 +18,10 @@ namespace GOTHIC_ENGINE
 		[[nodiscard]]
 		static bool IsSavePath(const std::filesystem::path& t_path, const std::vector<int>& t_saveSlots)
 		{
-			auto upper = [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); };
+			auto upper = [](const char ch) { return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); };
 
 			const auto pathName = t_path.filename().string();
-			const auto upperPathName = pathName | (std::views::transform(upper) | std::ranges::to<std::string>());
+			const auto upperPathName = pathName | std::views::transform(upper) | std::ranges::to<std::string>();
 
 
 			if (upperPathName == "CURRENT")
@@ -41,8 +41,8 @@ namespace GOTHIC_ENGINE
 			{
 				int nr;
 
-				const auto begin = std::next(upperPathName.c_str(), saveNameBegin.size());
-				const auto end = std::next(upperPathName.c_str(), upperPathName.size());
+				const auto begin = std::next(upperPathName.c_str(), static_cast<std::ptrdiff_t>(saveNameBegin.size()));
+				const auto end = std::next(upperPathName.c_str(), static_cast<std::ptrdiff_t>(upperPathName.size()));
 
 				auto error = std::from_chars(begin, end, nr);
 

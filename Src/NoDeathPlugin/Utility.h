@@ -98,7 +98,7 @@ public:
 		static_assert(LeftSize + RightSize == Size);
 
 		std::copy(t_left.cbegin(), t_left.cend(), begin());
-		std::copy(t_right.cbegin(), t_right.cend(), std::next(begin(), t_left.size()));
+		std::copy(t_right.cbegin(), t_right.cend(), std::next(begin(), static_cast<std::ptrdiff_t>(t_left.size())));
 	}
 
 	constexpr auto& upper()
@@ -132,15 +132,15 @@ public:
 	}
 
 	[[nodiscard]]
-	constexpr const char* const cbegin() const
+	constexpr const char* cbegin() const
 	{
 		return m_array.data();
 	}
 
 	[[nodiscard]]
-	constexpr const char* const cend() const
+	constexpr const char* cend() const
 	{
-		return std::next(m_array.data(), size());
+		return std::next(m_array.data(), static_cast<std::ptrdiff_t>(size()));
 	}
 
 	[[nodiscard]]

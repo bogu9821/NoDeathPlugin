@@ -6,7 +6,7 @@
 
 #ifndef AFTERDEATH_ENUM
 #define AFTERDEATH_ENUM
-enum class eAfterDeath
+enum class eAfterDeath : int
 {
 	NOTHING,
 	QUIT,
