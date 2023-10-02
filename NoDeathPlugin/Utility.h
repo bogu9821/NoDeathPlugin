@@ -23,17 +23,17 @@ namespace GOTHIC_ENGINE
 	{
 		bool m_blocked{};
 
-		explicit SingleInputHelper(bool t_block) 
-			: m_blocked(t_block) 
-		{ 
+		explicit SingleInputHelper(bool t_block)
+			: m_blocked(t_block)
+		{
 			if (t_block)
 			{
 				zinput->ProcessInputEvents();
 			}
 		}
 
-		~SingleInputHelper() 
-		{ 
+		~SingleInputHelper()
+		{
 			if (m_blocked)
 			{
 				zinput->ClearKeyBuffer();
@@ -71,25 +71,6 @@ template<typename... Args>
 inline void LogWarning(Args&&... args)
 {
 	PrintLineCmd("NoDeath :: ", std::forward<Args>(args)...);
-}
-
-[[nodiscard]]
-constexpr std::string_view SystemLangIDToString(const UnionCore::TSystemLangID t_id)
-{
-	using namespace UnionCore;
-	switch (t_id)
-	{
-	case Lang_Rus:
-		return "Russian";
-	case Lang_Eng:
-		return "English";
-	case Lang_Deu:
-		return "German";
-	case Lang_Pol:
-		return "Polish";
-	default:
-		return "Other";
-	}
 }
 
 [[nodiscard]]
@@ -209,37 +190,6 @@ constexpr auto SetWaitMessage(T&& t_firstLine, Args&&... t_lines)
 		const auto end = ((FixedStr{ "\n" } + FixedStr{ std::forward<Args>(t_lines) }) + ...);
 		return begin + end;
 	}
-}
-
-
-
-[[nodiscard]]
-inline std::string_view GetDefaultLocalizedMessage(const UnionCore::TSystemLangID t_id)
-{
-	static constexpr auto languages = std::make_tuple
-	(
-		std::make_pair(Lang_Eng, SetWaitMessage("Wait ", "or press enter to continue...")),
-		std::make_pair(Lang_Pol, SetWaitMessage("Poczekaj ", "lub naciśnij enter, by kontynuować...")),
-		std::make_pair(Lang_Deu, SetWaitMessage("Warten Sie ", "oder drücken Sie die Eingabetaste, um fortzufahren...")),
-		//TODO add ru
-		//std::make_pair(Lang_Rus, SetWaitMessage("", ""))
-	);
-
-
-	return std::apply
-	(
-		[t_id](const auto& ... args)  -> std::string_view
-		{
-			std::string_view s;
-
-			(((t_id == args.first) ? (s = args.second.data(), true) : false)
-				|| ... || (s = std::get<0>(languages).second.data(), true));
-
-			return s;
-
-
-		}, languages
-	);
 }
 
 #endif

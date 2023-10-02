@@ -4,6 +4,7 @@
 // Automatically generated block
 #pragma region Includes
 #include "Utility.h"
+#include "Language.h"
 #include "FadeScreen.h"
 #include "SaveDeleter.h"
 #include "NoDeath.h"

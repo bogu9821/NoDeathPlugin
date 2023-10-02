@@ -2796,6 +2796,9 @@
     <ClInclude Include="Hooks.h">
       <Filter>Plugin\Workspace\Plugin\NoDeath</Filter>
     </ClInclude>
+    <ClInclude Include="Language.h">
+      <Filter>Plugin\Workspace\Plugin\NoDeath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".build_settings.inl">
