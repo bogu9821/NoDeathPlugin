@@ -210,19 +210,17 @@ namespace GOTHIC_ENGINE
 				assert(false);
 			}
 
+			bool m_started{};
+			bool m_done{};
+			bool m_compatibilityMode{ true };
+			bool m_blockInput{};
+
+			eAfterDeath m_stepType{ eAfterDeath::NOTHING };
 
 			std::unique_ptr<FadeInScreen> m_fadeScreen{};
-			std::chrono::milliseconds m_waitTime{ 5000 };
 
 			using Clock = std::chrono::high_resolution_clock;
 			Clock::time_point m_startPoint{};
-			bool m_started{};
-			bool m_done{};
-			bool m_compatibilityMode{true};
-			eAfterDeath m_stepType{ eAfterDeath::NOTHING };
-
-			bool m_blockInput{};
-
-
+			std::chrono::milliseconds m_waitTime{ 5000 };	
 	};
 }
