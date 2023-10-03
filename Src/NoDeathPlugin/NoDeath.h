@@ -43,8 +43,8 @@ namespace GOTHIC_ENGINE
 
 			m_blockInput = zoptions->ReadBool("NODEATH", "BlockInput", 1);
 
-			const auto stepMin = std::to_underlying(eAfterDeath::NOTHING);
-			const auto stepMax = std::to_underlying(eAfterDeath::MAX);
+			static constexpr auto stepMin = std::to_underlying(eAfterDeath::NOTHING);
+			static constexpr auto stepMax = std::to_underlying(eAfterDeath::MAX);
 
 			auto readedStep = zoptions->ReadInt("NODEATH", "AfterDeath", stepMin);
 
