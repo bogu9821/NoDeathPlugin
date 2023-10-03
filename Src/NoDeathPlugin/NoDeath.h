@@ -130,18 +130,20 @@ namespace GOTHIC_ENGINE
 				{
 					zoptions->WriteString("internal", "menuAction", "NEW_GAME", 0);
 
-					const auto replaceParam = zoptions->commandline.Search("-NOMENU", 1) == -1;
+					const zSTRING param = "-NOMENU";
+
+					const auto replaceParam = zoptions->commandline.Search(param, 1) == -1;
 
 					if (replaceParam)
 					{
-						zoptions->commandline = "-NOMENU" + zoptions->commandline;
+						zoptions->commandline = param + zoptions->commandline;
 					}
 
 					gameMan->Menu(0);
 
 					if (replaceParam)
 					{
-						zoptions->commandline.Delete("-NOMENU", zTSTR_KIND::zSTR_ONLY);
+						zoptions->commandline.Delete(param, zTSTR_KIND::zSTR_ONLY);
 					}
 
 				}
