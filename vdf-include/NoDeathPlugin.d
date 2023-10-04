@@ -197,7 +197,7 @@ instance MenuItem_Opt_NoDeathPlugin_AfterDeath_Choice(C_MENU_ITEM_DEF)
     "Ничего|Выйти из игры|Новаѝ игра|Только удалить",
     "Nothing|Quit game|New game|Delete only",
     "Nichts|Spiel verlassen|Neues Spiel|Löschen",
-    "Nic|Wyjdź z gry|Nowa gra|Tylko skasuj"
+    "Nic|Wyjdź z gry|Nowa gra|Tylko usuń"
   );
 };
 
