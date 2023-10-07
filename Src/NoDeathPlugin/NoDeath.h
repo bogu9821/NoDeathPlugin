@@ -128,22 +128,22 @@ namespace GOTHIC_ENGINE
 
 				if (m_compatibilityMode)
 				{
+					static constexpr std::string_view paramWithGap = " -NOMENU";
+					
 					zoptions->WriteString("internal", "menuAction", "NEW_GAME", 0);
 
-					const zSTRING param = "-NOMENU ";
-
-					const auto replaceParam = zoptions->commandline.Search(param, 1) == -1;
+					const auto replaceParam = zoptions->commandline.Search(std::next(paramWithGap.data()), 1) == -1;
 
 					if (replaceParam)
 					{
-						zoptions->commandline = param + zoptions->commandline;
+						zoptions->commandline += paramWithGap.data();
 					}
 
 					gameMan->Menu(0);
 
 					if (replaceParam)
 					{
-						zoptions->commandline.Delete(param, zTSTR_KIND::zSTR_ONLY);
+						zoptions->commandline.Delete(paramWithGap.data(), zTSTR_KIND::zSTR_ONLY);
 					}
 
 				}
