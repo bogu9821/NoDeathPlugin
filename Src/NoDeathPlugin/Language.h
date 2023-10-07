@@ -7,7 +7,7 @@ inline constexpr auto g_languages = std::make_tuple
 (
 	std::make_pair(Lang_Eng, SetWaitMessage("Wait ", "or press enter to continue...")),
 	std::make_pair(Lang_Pol, SetWaitMessage("Poczekaj ", "lub naciśnij enter, by kontynuować...")),
-	std::make_pair(Lang_Deu, SetWaitMessage("Warten Sie ", "oder drücken Sie die Eingabetaste, um fortzufahren...")),
+	std::make_pair(Lang_Deu, SetWaitMessage("Warte", "oder drücke Enter, um fortzufahren...")),
 	std::make_pair(Lang_Rus, SetWaitMessage("\xCF\xEE\xE4\xEE\xE6\xE4\xE8\xF2\xE5 ", "\xE8\xEB\xE8 \xED\xE0\xE6\xEC\xE8\xF2\xE5 Enter, \xF7\xF2\xEE\xE1\xFB \xEF\xF0\xEE\xE4\xEE\xEB\xE6\xE8\xF2\xFC..."))
 );
 
