@@ -143,7 +143,11 @@ namespace GOTHIC_ENGINE
 
 					if (replaceParam)
 					{
-						zoptions->commandline.Delete(paramWithGap.data(), zTSTR_KIND::zSTR_ONLY);
+						const auto paramPos = zoptions->commandline.Search(paramWithGap.data(),1);
+						if (paramPos != -1)
+						{
+							zoptions->commandline.Delete(paramPos, paramWithGap.size());
+						}
 					}
 
 				}
