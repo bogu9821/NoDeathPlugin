@@ -110,35 +110,35 @@ namespace GOTHIC_ENGINE
 
 
 			static const auto savesString = []() -> std::filesystem::path
-			{
-
-				if (zoptions)
 				{
-					auto file = zoptions->GetDir(DIR_SAVEGAMES);
-					if (file)
-						return file->GetFullPath().ToChar();
-				}
 
-				return std::filesystem::path{ L"..\\Saves\\" };
-
-			}();
-
-			try
-			{
-				for (const auto& entry : std::filesystem::directory_iterator(savesString))
-				{
-					if (entry.is_directory())
+					if (zoptions)
 					{
-						vec.push_back(entry.path());
+						auto file = zoptions->GetDir(DIR_SAVEGAMES);
+						if (file)
+							return file->GetFullPath().ToChar();
+					}
+
+					return std::filesystem::path{ L"..\\Saves\\" };
+
+				}();
+
+				try
+				{
+					for (const auto& entry : std::filesystem::directory_iterator(savesString))
+					{
+						if (entry.is_directory())
+						{
+							vec.push_back(entry.path());
+						}
 					}
 				}
-			}
-			catch (const std::filesystem::filesystem_error& ex)
-			{
-				PrintLineCmd(ex.what());
-			}
+				catch (const std::filesystem::filesystem_error& ex)
+				{
+					PrintLineCmd(ex.what());
+				}
 
-			return vec;
+				return vec;
 		}
 
 
@@ -147,7 +147,6 @@ namespace GOTHIC_ENGINE
 		[[nodiscard]]
 		static std::vector<int> GetSavedSlots()
 		{
-
 			const auto saveManager = gameMan->savegameManager;
 
 			if (!saveManager)
@@ -156,7 +155,8 @@ namespace GOTHIC_ENGINE
 			}
 
 
-			std::vector<int> vec; vec.reserve(20);
+			std::vector<int> vec; 
+			vec.reserve(20);
 
 			const auto& infoList = saveManager->infoList;
 
@@ -170,37 +170,38 @@ namespace GOTHIC_ENGINE
 
 		static void ReinitSaveManager(const std::vector<int>& slots)
 		{
-			if (ogame->savegameManager)
+			auto const saveMan = ogame->savegameManager;
+
+			if (!saveMan)
 			{
-				auto const saveMan = ogame->savegameManager;
+				return;
+			}
 
-				for(const auto i : std::views::iota(0, saveMan->infoList.GetNum()))
+			for (const auto i : std::views::iota(0, saveMan->infoList.GetNum()))
+			{
+				const auto nr = saveMan->infoList[i]->m_SlotNr;
+
+				if (!std::ranges::any_of(slots,
+					[nr](const auto& slot)
+					{
+						return slot == nr;
+					}))
 				{
-					const auto nr = saveMan->infoList[i]->m_SlotNr;
-
-					if (!std::ranges::any_of(slots,
-						[nr](const auto& slot)
-						{
-							return slot == nr;
-						}))
-					{
-						continue;
-					}
-
-					if (saveMan->infoList[i]->refCtr > 1)
-					{
-						LogWarning("saveMan->infoList[i]->refCtr > 1");
-					}
-					else
-					{
-						saveMan->infoList[i]->Release();
-						saveMan->infoList[i] = new oCSavegameInfo(nr);
-					}
+					continue;
 				}
 
-				saveMan->Reinit();
-
+				if (saveMan->infoList[i]->refCtr > 1)
+				{
+					LogWarning("saveMan->infoList[i]->refCtr > 1");
+				}
+				else
+				{
+					saveMan->infoList[i]->Release();
+					saveMan->infoList[i] = new oCSavegameInfo(nr);
+				}
 			}
+
+			saveMan->Reinit();
 		}
 	};
 }
