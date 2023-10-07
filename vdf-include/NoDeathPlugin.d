@@ -147,8 +147,8 @@ instance MenuItem_Union_Auto_NoDeathPlugin(C_MENU_ITEM_UNION_DEF)
   text[0]          = "NoDeathPlugin";
   text[1] = Str_GetLocalizedString(
     "Наѝтройте параметры NoDeathPlugin",
+    "Configure NoDeathPlugin settings",
     "NoDeathPlugin-Einstellungen konfigurieren",
-    "Bildschirmverblassungszeit in Sekunden",
     "Zmień ustawienia NoDeathPlugin"
   );
   onselaction[0]   = SEL_ACTION_STARTMENU;
@@ -196,7 +196,7 @@ instance MenuItem_Opt_NoDeathPlugin_AfterDeath_Choice(C_MENU_ITEM_DEF)
   text[0]               = Str_GetLocalizedString(
     "Ничего|Выйти из игры|Новаѝ игра|Только удалить",
     "Nothing|Quit game|New game|Delete only",
-    "Nichts|Spiel verlassen|Neues Spiel|Löschen",
+    "Nichts tun|Spiel verlassen|Neues Spiel|Löschen",
     "Nic|Wyjdź z gry|Nowa gra|Tylko usuń"
   );
 };
@@ -211,13 +211,13 @@ instance MenuItem_Opt_NoDeathPlugin_BlockInput(C_MENU_ITEM)
   text[0] = Str_GetLocalizedString(
     "Блокировать ввод",
     "Block input",
-    "Eingabe blockieren",
+    "Tastatur Blockieren",
     "Zablokuj klawiaturę"
   );
   text[1] = Str_GetLocalizedString(
     "Блокировать ввод поѝле ѝмерти (рекомендуетѝѝ Вкл.)",
     "Block input after death (recommended On)",
-    "Eingabe blockieren nach dem Tod (empfohlen Ein)",
+    "Tastatur blockieren nach dem Tod (empfohlen Ein)",
     "Zablokuj klawiaturę po śmierci (zalecane Wł.)"
   );
 };
@@ -247,13 +247,13 @@ instance MenuItem_Opt_NoDeathPlugin_WaitTime(C_MENU_ITEM)
   text[0] = Str_GetLocalizedString(
     "Времѝ ожиданиѝ",
     "Wait time",
-    "Wartezeit",
+    "Bildabblendzeit",
     "Czas oczekiwania"
   );
   text[1] = Str_GetLocalizedString(
     "Времѝ затуханиѝ ѝкрана в ѝекундах",
     "Screen fade time in seconds",
-    "Bildschirmverblassungszeit in Sekunden",
+    "Bildabblendzeit nach den Tod in Sekunden",
     "Czas zanikania ekranu w sekundach"
   );
 };
