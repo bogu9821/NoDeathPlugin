@@ -146,7 +146,7 @@ namespace GOTHIC_ENGINE
 						const auto paramPos = zoptions->commandline.Search(paramWithGap.data(),1);
 						if (paramPos != -1)
 						{
-							zoptions->commandline.Delete(paramPos, paramWithGap.size());
+							zoptions->commandline.Delete(static_cast<unsigned int>(paramPos), paramWithGap.size());
 						}
 					}
 
