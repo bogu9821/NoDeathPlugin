@@ -18,12 +18,13 @@ namespace GOTHIC_ENGINE
 		[[nodiscard]]
 		static bool IsSavePath(const std::filesystem::path& t_path, const std::vector<int>& t_saveSlots)
 		{
-			auto upper = [](const char ch) { return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); };
+			auto upper = [](const char ch)
+			{ 
+				return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); 
+			};
 
-			const auto pathName = t_path.filename().string();
-			const auto upperPathName = pathName | std::views::transform(upper) | std::ranges::to<std::string>();
-
-
+			const auto upperPathName = t_path.filename().string() | std::views::transform(upper) | std::ranges::to<std::string>();
+					
 			if (upperPathName == "CURRENT")
 			{
 				return true;
@@ -57,7 +58,7 @@ namespace GOTHIC_ENGINE
 						return slot == nr;
 					});
 			}
-
+			
 			return false;
 		}
 
@@ -109,19 +110,18 @@ namespace GOTHIC_ENGINE
 			std::vector<std::filesystem::path> vec;
 
 
-			static const auto savesString = []() -> std::filesystem::path
+			static const auto savesString = []()
+			{
+				if (zoptions)
 				{
-
-					if (zoptions)
+					if (auto file = zoptions->GetDir(DIR_SAVEGAMES))
 					{
-						auto file = zoptions->GetDir(DIR_SAVEGAMES);
-						if (file)
-							return file->GetFullPath().ToChar();
+						return std::filesystem::path{ file->GetFullPath().ToChar() };
 					}
+				}
+				return std::filesystem::path{ L"..\\Saves\\" };
 
-					return std::filesystem::path{ L"..\\Saves\\" };
-
-				}();
+			}();
 
 				try
 				{
@@ -158,11 +158,9 @@ namespace GOTHIC_ENGINE
 			std::vector<int> vec; 
 			vec.reserve(20);
 
-			const auto& infoList = saveManager->infoList;
-
-			for (const auto i : std::views::iota(0, infoList.GetNum()))
+			for (const auto info : zCArrayView(saveManager->infoList))
 			{
-				vec.push_back(infoList[i]->m_SlotNr);
+				vec.push_back(info->m_SlotNr);
 			}
 
 			return vec;
@@ -177,9 +175,9 @@ namespace GOTHIC_ENGINE
 				return;
 			}
 
-			for (const auto i : std::views::iota(0, saveMan->infoList.GetNum()))
+			for (auto& info : zCArrayView(saveMan->infoList))
 			{
-				const auto nr = saveMan->infoList[i]->m_SlotNr;
+				const auto nr = info->m_SlotNr;
 
 				if (!std::ranges::any_of(slots,
 					[nr](const auto& slot)
@@ -190,14 +188,14 @@ namespace GOTHIC_ENGINE
 					continue;
 				}
 
-				if (saveMan->infoList[i]->refCtr > 1)
+				if (info->refCtr > 1)
 				{
 					LogWarning("saveMan->infoList[i]->refCtr > 1");
 				}
 				else
 				{
-					saveMan->infoList[i]->Release();
-					saveMan->infoList[i] = new oCSavegameInfo(nr);
+					info->Release();
+					info = new oCSavegameInfo(nr);
 				}
 			}
 

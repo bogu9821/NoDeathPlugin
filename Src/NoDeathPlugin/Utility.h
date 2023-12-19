@@ -40,6 +40,13 @@ namespace GOTHIC_ENGINE
 			}
 		}
 	};
+
+
+	template<typename T>
+	inline auto zCArrayView(zCArray<T>&  t_array)
+	{
+		return std::span{ t_array.GetArray(),static_cast<size_t>(t_array.GetNum()) };
+	}
 }
 
 #ifndef NODEATH_UTILITY
